@@ -10,6 +10,7 @@ public final class Expression {
 
     private final Header header;
     private final Body body;
+    private final Cache cache = new Cache();
 
     private Expression(Header header, Body body) {
         this.header = header;
@@ -45,21 +46,11 @@ public final class Expression {
     }
 
     public Delimiters delimiters() {
-        final String raw = this.header.raw();
-        if (raw == null || raw.isBlank()) {
-            return Delimiters.defaults();
-        }
-        return Delimiters.defaults().add(raw);
+        return this.cache.delimiters();
     }
 
     public Numbers numbers() {
-        final String raw = this.body.raw();
-        if (raw.isBlank()) {
-            return Numbers.empty();
-        }
-        List<PositiveNumber> positiveNumbers = this.delimiters().tokenize(raw)
-                .filter(s -> !s.isEmpty()).map(PositiveNumber::parse).toList();
-        return new Numbers(positiveNumbers);
+        return this.cache.numbers();
     }
 
     private static boolean hasHeader(String input) {
@@ -74,4 +65,41 @@ public final class Expression {
         }
         return idx;
     }
+
+    /**
+     * Expression으로부터 파생되는 계산 값들을 지연 초기화하고 캐싱하는 클래스.
+     */
+    private class Cache {
+        private Delimiters delimiters;
+        private Numbers numbers;
+
+        public Delimiters delimiters() {
+            if (delimiters != null) {
+                return delimiters;
+            }
+
+            final String raw = header.raw();
+            if (raw == null || raw.isBlank()) {
+                return this.delimiters = Delimiters.defaults();
+            }
+
+            return this.delimiters = Delimiters.defaults().add(raw);
+        }
+
+        public Numbers numbers() {
+            if (numbers != null) {
+                return numbers;
+            }
+
+            final String raw = body.raw();
+            if (raw.isBlank()) {
+                return this.numbers = Numbers.empty();
+            }
+
+            List<PositiveNumber> positiveNumbers = this.delimiters().tokenize(raw)
+                    .filter(s -> !s.isEmpty()).map(PositiveNumber::parse).toList();
+            return this.numbers = new Numbers(positiveNumbers);
+        }
+    }
 }
+
