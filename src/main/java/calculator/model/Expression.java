@@ -1,7 +1,6 @@
 package calculator.model;
 
 import java.util.List;
-import calculator.view.ConsolePrinter;
 
 public final class Expression {
     private static final String HEADER_PREFIX = "//";

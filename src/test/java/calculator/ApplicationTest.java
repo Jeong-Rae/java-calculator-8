@@ -123,6 +123,13 @@ class ApplicationTest extends NsTest {
                 .isInstanceOf(IllegalArgumentException.class));
     }
 
+    @Test
+    void 숫자는_커스텀_구분자로_사용할_수없다() {
+        assertSimpleTest(() -> assertThatThrownBy(() -> runException("//1\\n1,2,3"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("숫자는 커스텀 구분자로 사용할 수 없습니다."));
+    }
+
     @Override
     public void runMain() {
         Application.main(new String[] {});
