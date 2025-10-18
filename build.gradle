@@ -1,9 +1,18 @@
 plugins {
     id 'java'
+    id 'application'
 }
 
 group = 'camp.nextstep.edu'
 version = '1.0-SNAPSHOT'
+
+application {
+    mainClass = 'calculator.Application'
+}
+
+run {
+    standardInput = System.in
+}
 
 java {
     toolchain {

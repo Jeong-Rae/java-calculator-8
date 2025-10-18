@@ -1,5 +1,6 @@
 package calculator.controller;
 
+import calculator.model.Expression;
 import calculator.view.ConsoleInputView;
 import calculator.view.ConsoleOutputView;
 
@@ -16,8 +17,9 @@ public class CalculatorController {
     public void run() {
         try {
             String input = inputView.readUserInput();
-            int result = 0;
-            outputView.printResult(result);
+            Expression expression = Expression.from(input);
+            int sum = expression.numbers().sum();
+            outputView.printResult(sum);
         } catch (IllegalArgumentException e) {
             outputView.printError(e.getMessage());
             throw e;
