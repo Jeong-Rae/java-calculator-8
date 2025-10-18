@@ -18,8 +18,8 @@ public final class Expression {
     }
 
     public static Expression from(String input) {
-        if (input == null) {
-            throw new IllegalArgumentException("입력은 null일 수 없습니다.");
+        if (input == null || input.isBlank()) {
+            throw new IllegalArgumentException("입력은 비어 있을 수 없습니다.");
         }
         if (!hasHeader(input)) {
             return new Expression(EMPTY_HEADER, new Body(input));
