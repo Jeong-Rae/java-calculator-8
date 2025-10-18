@@ -64,7 +64,7 @@ class ApplicationTest extends NsTest {
     @Test
     void 커스텀_구분자가_역슬래시인_경우() {
         assertSimpleTest(() -> {
-            run("//\\\\\\n1\\2\\3");
+            run("//\\\\\\n1\\\\2\\\\3");
             assertThat(output()).contains("결과 : 6");
         });
     }
