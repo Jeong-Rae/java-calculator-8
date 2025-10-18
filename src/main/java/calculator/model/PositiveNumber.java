@@ -3,7 +3,7 @@ package calculator.model;
 public record PositiveNumber(int value) {
     public PositiveNumber {
         if (value < 0) {
-            throw new IllegalArgumentException("음수는 허용되지 않습니다: " + value);
+            throw new IllegalArgumentException(String.format("음수는 허용되지 않습니다: %d", value));
         }
     }
 
