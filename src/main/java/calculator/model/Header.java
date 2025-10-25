@@ -2,6 +2,8 @@ package calculator.model;
 
 import java.util.Objects;
 
+import calculator.model.Delimiter;
+
 public final class Header {
     private static final String PREFIX = "//";
     private static final String HEADER_SUFFIX = "\n";
@@ -10,9 +12,11 @@ public final class Header {
 
     private final String value;
     private final String body;
+    private final Delimiter delimiter;
 
-    private Header(String value, String body) {
+    private Header(String value, Delimiter delimiter, String body) {
         this.value = value;
+        this.delimiter = delimiter;
         this.body = body;
     }
 
@@ -37,7 +41,17 @@ public final class Header {
         String bodyPart = normalized.substring(newlineIndex + HEADER_SUFFIX.length());
         String normalizedHeader = normalizeValue(headerPart);
 
-        return new Header(normalizedHeader, bodyPart);
+        Delimiter delimiter = parseDelimiter(normalizedHeader);
+        return new Header(normalizedHeader, delimiter, bodyPart);
+    }
+
+    private static Delimiter parseDelimiter(String normalizedHeader) {
+        String rawDelimiter = normalizedHeader.substring(PREFIX.length(),
+                normalizedHeader.length() - HEADER_SUFFIX.length());
+        if (rawDelimiter.isBlank()) {
+            throw new IllegalArgumentException("구분자는 비어 있을 수 없습니다.");
+        }
+        return Delimiter.custom(rawDelimiter);
     }
 
     private static String normalize(String input) {
@@ -57,8 +71,8 @@ public final class Header {
         return value;
     }
 
-    public String delimiter() {
-        return value.substring(PREFIX.length(), value.length() - HEADER_SUFFIX.length());
+    public Delimiter delimiter() {
+        return delimiter;
     }
 
     public String body() {

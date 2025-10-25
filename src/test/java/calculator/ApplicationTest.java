@@ -40,7 +40,7 @@ class ApplicationTest extends NsTest {
     @Test
     void 커스텀_구분자가_단일문자인_경우() {
         assertSimpleTest(() -> {
-            run("//;\\n1;2;3");
+            run("//a\\n1a2a3");
             assertThat(output()).contains("결과 : 6");
         });
     }
@@ -55,26 +55,23 @@ class ApplicationTest extends NsTest {
 
     @Test
     void 커스텀_구분자가_특수문자인_경우() {
-        assertSimpleTest(() -> {
-            run("//#\\n1#2#3");
-            assertThat(output()).contains("결과 : 6");
-        });
+        assertSimpleTest(() -> assertThatThrownBy(() -> runException("//#\\n1#2#3"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("알파벳 문자만"));
     }
 
     @Test
     void 커스텀_구분자가_역슬래시인_경우() {
-        assertSimpleTest(() -> {
-            run("//\\\\\\n1\\\\2\\\\3");
-            assertThat(output()).contains("결과 : 6");
-        });
+        assertSimpleTest(() -> assertThatThrownBy(() -> runException("//\\\\\\n1\\\\2\\\\3"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("알파벳 문자만"));
     }
 
     @Test
-    void 헤더는_있지만_비어있는_경우_기본구분자로처리() {
-        assertSimpleTest(() -> {
-            run("//\\n1,2:3");
-            assertThat(output()).contains("결과 : 6");
-        });
+    void 헤더는_있지만_비어있는_경우_예외발생() {
+        assertSimpleTest(() -> assertThatThrownBy(() -> runException("//\\n1,2:3"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("구분자는 비어 있을 수 없습니다."));
     }
 
     // 실패 및 예외
@@ -127,7 +124,7 @@ class ApplicationTest extends NsTest {
     void 숫자는_커스텀_구분자로_사용할_수없다() {
         assertSimpleTest(() -> assertThatThrownBy(() -> runException("//1\\n1,2,3"))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("숫자는 커스텀 구분자로 사용할 수 없습니다."));
+                .hasMessageContaining("알파벳 문자만"));
     }
 
     @Override

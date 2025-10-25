@@ -9,12 +9,15 @@ import java.util.stream.Stream;
 public final class Delimiters {
     private static final String COMMA = ",";
     private static final String COLON = ":";
-    private static final Set<String> DEFAULTS = Set.of(COMMA, COLON);
+    private static final Set<Delimiter> DEFAULTS = Set.of(
+            Delimiter.internal(COMMA),
+            Delimiter.internal(COLON)
+    );
 
-    private final Set<String> values;
+    private final Set<Delimiter> values;
     private final Pattern splitPattern;
 
-    private Delimiters(Set<String> values) {
+    private Delimiters(Set<Delimiter> values) {
         this.values = Set.copyOf(values);
         this.splitPattern = Pattern.compile(buildRegex(this.values));
     }
@@ -23,33 +26,21 @@ public final class Delimiters {
         return new Delimiters(DEFAULTS);
     }
 
-    public static Delimiters fromHeader(String raw) {
-        if (raw == null) {
-            throw new IllegalArgumentException("header는 null일 수 없습니다.");
-        }
-        if (raw.isBlank()) {
-            return defaults();
-        }
-        if (raw.matches("\\d+")) {
-            throw new IllegalArgumentException("숫자는 커스텀 구분자로 사용할 수 없습니다.");
-        }
-        return defaults().add(raw);
+    public static Delimiters fromHeader(Delimiter delimiter) {
+        Objects.requireNonNull(delimiter, "delimiter");
+        return defaults().add(delimiter);
     }
 
-    public static Delimiters of(Set<String> values) {
+    public static Delimiters of(Set<Delimiter> values) {
         if (values == null || values.isEmpty())
             return defaults();
         return new Delimiters(values);
     }
 
-    public Delimiters add(String delimiter) {
+    public Delimiters add(Delimiter delimiter) {
         Objects.requireNonNull(delimiter);
-        if (delimiter.isEmpty()) {
-            throw new IllegalArgumentException("빈 구분자는 허용되지 않습니다.");
-        }
-
         // Set 불변 유지
-        Set<String> merged = new LinkedHashSet<>(values);
+        Set<Delimiter> merged = new LinkedHashSet<>(values);
         merged.add(delimiter);
         return new Delimiters(merged);
     }
@@ -60,12 +51,12 @@ public final class Delimiters {
         return Stream.of(splitPattern.split(input, -1));
     }
 
-    public Set<String> values() {
+    public Set<Delimiter> values() {
         return values;
     }
 
-    private static String buildRegex(Set<String> delimiters) {
-        String alternation = delimiters.stream().map(Delimiters::escapeRegex)
+    private static String buildRegex(Set<Delimiter> delimiters) {
+        String alternation = delimiters.stream().map(Delimiter::value).map(Delimiters::escapeRegex)
                 .reduce((a, b) -> a + "|" + b).orElse(",");
         return alternation;
     }
@@ -85,4 +76,5 @@ public final class Delimiters {
         }
         return sb.toString();
     }
+
 }
