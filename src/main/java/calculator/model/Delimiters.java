@@ -23,6 +23,19 @@ public final class Delimiters {
         return new Delimiters(DEFAULTS);
     }
 
+    public static Delimiters fromHeader(String raw) {
+        if (raw == null) {
+            throw new IllegalArgumentException("header는 null일 수 없습니다.");
+        }
+        if (raw.isBlank()) {
+            return defaults();
+        }
+        if (raw.matches("\\d+")) {
+            throw new IllegalArgumentException("숫자는 커스텀 구분자로 사용할 수 없습니다.");
+        }
+        return defaults().add(raw);
+    }
+
     public static Delimiters of(Set<String> values) {
         if (values == null || values.isEmpty())
             return defaults();
