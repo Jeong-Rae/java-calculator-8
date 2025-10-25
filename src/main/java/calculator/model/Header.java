@@ -2,8 +2,12 @@ package calculator.model;
 
 import java.util.Objects;
 
-import calculator.model.Delimiter;
-
+/**
+ * Header는 커스텀 구분자 선언부를 파싱하고 본문을 분리해 {@link Expression}이 안전한 입력을 구성하도록 돕는다.
+ * <p>
+ * 필요성: 사용자가 정의한 구분자 형식을 검증하고, 잘못된 선언을 초기에 차단해 오류 전파를 줄인다.
+ * 참조: {@link Delimiter}를 생성해 {@link Delimiters}가 병합 가능한 값 객체를 확보하도록 지원한다.
+ */
 public final class Header {
     private static final String PREFIX = "//";
     private static final String HEADER_SUFFIX = "\n";

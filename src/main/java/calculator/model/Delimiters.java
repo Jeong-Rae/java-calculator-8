@@ -6,6 +6,12 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
+/**
+ * Delimiters는 기본 구분자와 {@link Delimiter} 값 객체를 병합해 정규식 토큰 분리 패턴을 제공한다.
+ * <p>
+ * 필요성: 입력 문자열 분리에 필요한 정책을 한곳에서 관리해 {@link Numbers}가 안전하게 토큰 스트림을 얻도록 보장한다.
+ * 참조: {@link Expression}이 {@link Header}에서 추출한 커스텀 {@link Delimiter}를 추가할 때 사용된다.
+ */
 public final class Delimiters {
     private static final String COMMA = ",";
     private static final String COLON = ":";
@@ -62,10 +68,7 @@ public final class Delimiters {
     }
 
     /**
-     * regax 예약 문자에 대한 허용을 위한 이스케이프 처리
-     * 
-     * @param str
-     * @return
+     * regex 예약 문자를 이스케이프해 정규식 패턴을 안전하게 구성한다.
      */
     private static String escapeRegex(String str) {
         StringBuilder sb = new StringBuilder();
